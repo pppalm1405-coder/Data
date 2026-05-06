@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบจัดเก็บชั่วโมงจิตอาสา | Student Activity Tracker</title>
-    <!-- โหลด Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- โหลด Font Google (Prompt) -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- ตั้งค่า สีและ Font ของ Tailwind -->
+    
+    <!-- โหลด Tailwind CSS ผ่าน CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ตั้งค่า สีและ Font ของ Tailwind (ต้องวางไว้ใต้ CDN เสมอ) -->
     <script>
         tailwind.config = {
             theme: {
@@ -16,18 +18,17 @@
                     fontFamily: { sans: ['Prompt', 'sans-serif'] },
                     colors: {
                         primary: '#FBBF24', // เหลือง
-                        primaryDark: '#D97706', // เหลืองเข้ม (Hover)
+                        primaryDark: '#D97706', // เหลืองเข้ม
                         secondary: '#4B5563', // เทา
-                        bgLight: '#F3F4F6' // เทาอ่อน (Background)
+                        bgLight: '#F3F4F6' // เทาอ่อน
                     }
                 }
             }
         }
     </script>
-    <style>
-        /* ซ่อน Element ที่ไม่ได้ใช้งาน */
-        .hidden-section { display: none !important; }
-    </style>
+
+    <!-- เชื่อมต่อไฟล์ CSS ของเราเอง -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-bgLight text-secondary min-h-screen font-sans">
 
@@ -53,7 +54,7 @@
                 </button>
             </form>
 
-            <!-- ปุ่มจำลองสำหรับการทดสอบ UI (ลบออกเมื่อต่อ Firebase) -->
+            <!-- ปุ่มจำลอง (ลบออกเมื่อต่อ Firebase) -->
             <div class="mt-6 border-t pt-4 text-center">
                 <p class="text-xs text-gray-400 mb-2">ปุ่มสำหรับทดสอบ UI (Demo)</p>
                 <div class="flex space-x-2">
@@ -192,107 +193,14 @@
                                 <button class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded shadow">ปฏิเสธ</button>
                             </td>
                         </tr>
-                        <!-- ตัวอย่างคนที่ 2 -->
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-4 text-sm font-medium">64100002</td>
-                            <td class="p-4 text-sm">สมหญิง รักเรียน</td>
-                            <td class="p-4 text-sm">ค่ายคอมพิวเตอร์เพื่อน้อง<br><span class="text-xs text-gray-400">12 พ.ค. 2026</span></td>
-                            <td class="p-4"><a href="#" class="text-blue-500 hover:underline text-sm flex items-center">🖼️ ดูรูปภาพ</a></td>
-                            <td class="p-4 flex justify-center gap-2">
-                                <span class="text-green-600 text-sm font-bold">✔ อนุมัติแล้ว</span>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </section>
 
-    <!-- ==================== JavaScript Logic ==================== -->
-    <script>
-        // ฟังก์ชันสลับหน้า UI (จำลองการ Login)
-        function switchView(viewId) {
-            document.getElementById('loginView').classList.add('hidden-section');
-            document.getElementById('studentView').classList.add('hidden-section');
-            document.getElementById('adminView').classList.add('hidden-section');
-            
-            document.getElementById(viewId).classList.remove('hidden-section');
-            
-            // ล้างค่า Error ทุกครั้งที่เปลี่ยนหน้า
-            if(viewId === 'studentView') resetValidation();
-        }
-
-        // ฟังก์ชันตรวจสอบและบันทึกข้อมูล (ฝั่งนักศึกษา)
-        function submitActivity() {
-            let isValid = true;
-            
-            // ดึงค่าจาก Input
-            const name = document.getElementById('actName');
-            const date = document.getElementById('actDate');
-            const certifier = document.getElementById('actCertifier');
-            const file = document.getElementById('actFile');
-
-            // ตรวจสอบ ชื่อกิจกรรม
-            if (!name.value.trim()) {
-                showError(name, 'err-actName');
-                isValid = false;
-            } else { clearError(name, 'err-actName'); }
-
-            // ตรวจสอบ วันที่
-            if (!date.value) {
-                showError(date, 'err-actDate');
-                isValid = false;
-            } else { clearError(date, 'err-actDate'); }
-
-            // ตรวจสอบ ผู้รับรอง
-            if (!certifier.value.trim()) {
-                showError(certifier, 'err-actCertifier');
-                isValid = false;
-            } else { clearError(certifier, 'err-actCertifier'); }
-
-            // ตรวจสอบ ไฟล์
-            if (file.files.length === 0) {
-                showError(file, 'err-actFile');
-                isValid = false;
-            } else { clearError(file, 'err-actFile'); }
-
-            // ถ้ายืนยันข้อมูลครบถ้วน
-            if (isValid) {
-                alert('ข้อมูลถูกต้อง! (เตรียมส่งข้อมูลและไฟล์ขึ้น Firebase)');
-                /* 
-                 * ตรงนี้คือจุดที่คุณจะเขียนโค้ดต่อกับ Firebase
-                 * 1. อัปโหลด file.files[0] ไปยัง Firebase Storage เพื่อเอา URL
-                 * 2. เอา URL และ Text (name, date, certifier) บันทึกลง Firestore
-                 */
-                
-                // ล้างฟอร์มหลังจำลองการส่งเสร็จ
-                document.getElementById('activityForm').reset();
-            }
-        }
-
-        // Utility: แสดงขอบสีแดงและข้อความแจ้งเตือน
-        function showError(inputElement, errorId) {
-            inputElement.classList.add('border-red-500', 'bg-red-50');
-            inputElement.classList.remove('border-gray-300');
-            document.getElementById(errorId).classList.remove('hidden');
-        }
-
-        // Utility: ล้างขอบสีแดง
-        function clearError(inputElement, errorId) {
-            inputElement.classList.remove('border-red-500', 'bg-red-50');
-            inputElement.classList.add('border-gray-300');
-            document.getElementById(errorId).classList.add('hidden');
-        }
-
-        // Utility: ล้าง Error ทั้งหมด
-        function resetValidation() {
-            const inputs = ['actName', 'actDate', 'actCertifier', 'actFile'];
-            inputs.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) clearError(el, 'err-' + id);
-            });
-            document.getElementById('activityForm').reset();
-        }
-    </script>
+    <!-- เชื่อมต่อไฟล์ JavaScript ของเรา -->
+    <!-- ใส่ defer เพื่อให้โหลด HTML ให้เสร็จก่อนแล้วค่อยรัน Script -->
+    <script src="script.js" defer></script>
 </body>
 </html>
